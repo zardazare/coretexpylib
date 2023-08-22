@@ -8,6 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+      - name: Check if version bumb is necessary
+        run: |
+          if [[ ( "${{ github.event.inputs.destination_branch != 'main' }}" ) ]]; then
+            echo "Skipping version bump..."
+            exit 0
+          fi
+
       - name: Check if user is allowed to execute the workflow
         run: |
           if [[ ( "${{ github.actor }}" != 'coretex-admin' && "${{ github.actor }}" != 'igorperic17' && "${{ github.actor }}" != 'dule1322' && "${{ github.repository_owner }}" != "${{ github.actor }}" ) ]]; then
