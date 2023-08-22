@@ -5,20 +5,13 @@ on:
 
 jobs:
   version_bump:
+    if: github.event.inputs.destination_branch == 'main'
     runs-on: ubuntu-latest
     
     steps:
-      - name: Check if version bumb is necessary
-        id: version_bump
-        run: |
-          if [[ ( "${{ github.event.inputs.destination_branch == 'main' }}" ) ]]; then
-            echo "Starting version bump..."
-            exit 0
-          fi
-
       - name: Check if user is allowed to execute the workflow
         run: |
-          if [[ ( ${{ success() && steps.version_bump.conclusion == 'success' }} && "${{ github.actor }}" != 'coretex-admin' && "${{ github.actor }}" != 'igorperic17' && "${{ github.actor }}" != 'dule1322' && "${{ github.repository_owner }}" != "${{ github.actor }}" ) ]]; then
+          if [[ ( "${{ github.actor }}" != 'coretex-admin' && "${{ github.actor }}" != 'igorperic17' && "${{ github.actor }}" != 'dule1322' && "${{ github.repository_owner }}" != "${{ github.actor }}" ) ]]; then
             echo "::error::You are not authorized to execute this workflow."
             exit 1
           fi
