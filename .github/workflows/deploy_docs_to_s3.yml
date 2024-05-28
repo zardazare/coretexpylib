@@ -1,0 +1,33 @@
+name: Deploy docs to AWS S3
+
+# on:
+#   push:
+#     branches:
+#       - develop
+#       - stage
+#       - main
+
+jobs:
+  generate-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install Doxygen
+      run: sudo apt-get update && apt-get install doxygen -y
+
+    - name: Generate Doxygen documentation
+      run: doxygen Doxyfile
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Sync S3 bucket
+      run: |
+        aws s3 sync ./documentation/html s3://${{ secrets.AWS_S3_BUCKET_NAME }} --delete
