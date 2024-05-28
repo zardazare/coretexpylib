@@ -10,6 +10,16 @@ name: Deploy docs to AWS S3
 # Configure Manual Trigger
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Which environment to deploy to'
+        required: true
+        default: 'develop'
+        type: choice
+        options:
+          - develop
+          - stage
+          - main
 
 jobs:
   generate-and-deploy:
