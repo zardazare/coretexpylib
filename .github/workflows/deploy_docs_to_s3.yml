@@ -7,6 +7,10 @@ name: Deploy docs to AWS S3
 #       - stage
 #       - main
 
+# Configure Manual Trigger
+on:
+  workflow_dispatch:
+
 jobs:
   generate-and-deploy:
     runs-on: ubuntu-latest
