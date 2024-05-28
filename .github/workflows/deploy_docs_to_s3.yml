@@ -30,7 +30,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Install Doxygen
-      run: sudo apt-get update && apt-get install doxygen -y
+      run: sudo apt-get install -y --no-install-recommends doxygen
 
     - name: Generate Doxygen documentation
       run: doxygen Doxyfile
