@@ -10,6 +10,7 @@ name: Deploy docs to AWS S3
 # Configure Manual Trigger
 on:
   workflow_dispatch:
+    secrets: inherit
     inputs:
       environment:
         description: 'Which environment to deploy to'
