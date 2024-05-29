@@ -26,6 +26,10 @@ jobs:
   generate-and-deploy:
     runs-on: ubuntu-latest
 
+    permissions:
+      id-token: write # This is required for requesting the JWT
+      contents: read  # This is required for actions/checkout
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -46,8 +50,8 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: us-east-1
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        audience: sts.amazonaws.com
+        role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
 
     - name: Sync S3 bucket
       run: |
