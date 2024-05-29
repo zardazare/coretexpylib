@@ -42,16 +42,16 @@ jobs:
 
     - name: Use variables
       run: |
-        echo "AWS_REGION: ${{ vars.AWS_REGION }}"
-        echo "AWS_REGION no vars context: $AWS_REGION"
-        echo "AWS_REGION env context: ${{ env.AWS_REGION }}"
+        echo "AWS_REGION: '${{ vars.AWS_REGION }}'"
+        echo "AWS_REGION no vars context: '$AWS_REGION'"
+        echo "AWS_REGION env context: '${{ env.AWS_REGION }}'"
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: us-east-1
         audience: sts.amazonaws.com
-        role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+        role-to-assume: '${{ secrets.AWS_ROLE_TO_ASSUME }}'
 
     - name: Sync S3 bucket
       run: |
