@@ -10,7 +10,7 @@ name: Deploy docs to AWS S3
 # Configure Manual Trigger
 on:
   workflow_dispatch:
-    secrets: inherit
+    # secrets: inherit
     inputs:
       environment:
         description: 'Which environment to deploy to'
@@ -25,6 +25,8 @@ on:
 jobs:
   generate-and-deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}
 
     permissions:
       id-token: write # This is required for requesting the JWT
