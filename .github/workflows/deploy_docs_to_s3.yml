@@ -1,32 +1,30 @@
 name: Deploy docs to AWS S3
 
-# on:
-#   push:
-#     branches:
-#       - develop
-#       - stage
-#       - main
+on:
+  push:
+    branches:
+      - docs_workflow_test
+      # - develop
+      # - main
 
 # Configure Manual Trigger
-on:
-  workflow_dispatch:
-    # secrets: inherit
-    inputs:
-      environment:
-        description: 'Which environment to deploy to'
-        required: true
-        default: 'develop'
-        type: choice
-        options:
-          - develop
-          - stage
-          - main
+# on:
+#   workflow_dispatch:
+#     # secrets: inherit
+#     inputs:
+#       environment:
+#         description: 'Which environment to deploy to'
+#         required: true
+#         default: 'develop'
+#         type: choice
+#         options:
+#           - develop
+#           - stage
+#           - main
 
 jobs:
   generate-and-deploy:
     runs-on: ubuntu-latest
-    environment:
-      name: ${{ inputs.environment }}
 
     permissions:
       id-token: write # This is required for requesting the JWT
@@ -35,6 +33,10 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+    
+    - name: Print environment
+      run: |
+          echo ${{ github.base_ref == '' && github.ref_name || github.base_ref }}
 
     - name: Install Doxygen
       run: sudo apt-get install -y --no-install-recommends doxygen
