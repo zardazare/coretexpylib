@@ -1,0 +1,35 @@
+name: Test MSTeams Notifications
+
+# Configure Manual Trigger
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Which environment to deploy to'
+        required: true
+        default: 'develop'
+        type: choice
+        options:
+          - develop
+          - stage
+          - main
+
+jobs:
+  test-msteams-notification:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Install jq
+      run: sudo apt-get install -y --no-install-recommends jq
+    - name: Simulate Failure
+      run: exit 1
+
+    - name: Notify Microsoft Teams on Failure
+      if: failure()
+      run: |
+        PAYLOAD=$(echo '{}' | jq --arg msg "Workflow failed for ${{ github.repository }} on branch ${{ github.ref }}, environment ${{ inputs.environment }}. Job: ${{ github.job }}." '.text = $msg')
+        curl -H 'Content-Type: application/json' -d "$PAYLOAD" ${{ secrets.TEAMS_WEBHOOK_URL }}
