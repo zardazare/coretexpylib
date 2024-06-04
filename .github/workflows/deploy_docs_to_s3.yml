@@ -9,6 +9,8 @@ on:
 jobs:
   generate-and-deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref_name }} # Using branch as environment name
 
     permissions:
       id-token: write # This is required for requesting the JWT
@@ -17,28 +19,22 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-    
     - name: Print branch name deploy running on
       run: |
-          echo ${{ github.base_ref == '' && github.ref_name || github.base_ref }}
-
+          echo ${{ github.ref_name }}
     - name: Install Doxygen
       run: sudo apt-get install -y --no-install-recommends doxygen
-
     - name: Generate Doxygen documentation
       run: doxygen Doxyfile
-
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: '${{ vars.AWS_REGION }}'
         audience: sts.amazonaws.com
         role-to-assume: '${{ secrets.AWS_ROLE_TO_ASSUME }}'
-
     - name: Sync S3 bucket
       run: |
         aws s3 sync ./documentation/html s3://${{ secrets.AWS_S3_BUCKET_NAME }} --delete
-
     - name: Invalidate CloudFront cache and wait for completion
       env:
         DISTRIBUTION_ID: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
@@ -46,7 +42,7 @@ jobs:
         INVALIDATION_ID=$(aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*" --query 'Invalidation.Id' --output text)
         echo "Created invalidation with ID: $INVALIDATION_ID"
         STATUS="InProgress"
-        TIMEOUT=120  # 2 minutes timeout
+        TIMEOUT=180  # 3 minutes timeout
         START_TIME=$(date +%s)
 
         while [ "$STATUS" == "InProgress" ]; do
