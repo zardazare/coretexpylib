@@ -31,5 +31,5 @@ jobs:
     - name: Notify Microsoft Teams on Failure
       if: failure()
       run: |
-        PAYLOAD=$(echo '{}' | jq --arg msg "Workflow failed for ${{ github.repository }} on branch ${{ github.ref }}, environment ${{ inputs.environment }}. Job: ${{ github.job }}." '.text = $msg')
+        PAYLOAD=$(echo '{}' | jq --arg title "GitHub Actions Failure: ${{ github.workflow }} " --arg msg "Workflow failed for repository: ${{ github.repository }} on branch: ${{ github.ref }}. Job: ${{ github.job }}." '{ title: $title, text: $msg }')
         curl -H 'Content-Type: application/json' -d "$PAYLOAD" ${{ secrets.TEAMS_WEBHOOK_URL }}
